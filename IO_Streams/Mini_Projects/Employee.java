@@ -6,27 +6,19 @@ public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    int employeeId;
-    String employeeName;
-    int employeeAge;
-    double employeeSalary;
+    private int id;
+    private String name;
+    private int age;
+    private double salary;
 
-
-    public Employee(int employeeId, String employeeName,
-                    int employeeAge, double employeeSalary) {
-
-        this.employeeId = employeeId;
-        this.employeeName = employeeName;
-        this.employeeAge = employeeAge;
-        this.employeeSalary = employeeSalary;
+    public Employee(int id, String name, int age, double salary) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.salary = salary;
     }
 
-
     public void display() {
-
-        System.out.println(employeeId + " "
-                + employeeName + " "
-                + employeeAge + " "
-                + employeeSalary);
+        System.out.println(id + " " + name + " " + age + " " + salary);
     }
 }

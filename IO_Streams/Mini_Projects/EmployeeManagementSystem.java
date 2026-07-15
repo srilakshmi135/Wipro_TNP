@@ -6,12 +6,9 @@ import java.util.Scanner;
 public class EmployeeManagementSystem {
 
     static Scanner sc = new Scanner(System.in);
-
-    static String fileName = "employee.dat";
-
+    static final String fileName = "employee.dat";
 
     public static void main(String[] args) {
-
 
         while (true) {
 
@@ -19,10 +16,9 @@ public class EmployeeManagementSystem {
             System.out.println("1. Add an Employee");
             System.out.println("2. Display All");
             System.out.println("3. Exit");
-
+            System.out.print("Enter your choice: ");
 
             int choice = sc.nextInt();
-
 
             switch (choice) {
 
@@ -30,16 +26,14 @@ public class EmployeeManagementSystem {
                     addEmployee();
                     break;
 
-
                 case 2:
                     displayEmployees();
                     break;
 
-
                 case 3:
                     System.out.println("Exiting the System");
-                    System.exit(0);
-
+                    sc.close();
+                    return;
 
                 default:
                     System.out.println("Invalid Choice");
@@ -47,109 +41,66 @@ public class EmployeeManagementSystem {
         }
     }
 
-
-
-    public static void addEmployee() {
-
+    static void addEmployee() {
 
         System.out.print("Enter Employee ID: ");
         int id = sc.nextInt();
 
-
         System.out.print("Enter Employee Name: ");
         String name = sc.next();
-
 
         System.out.print("Enter Employee Age: ");
         int age = sc.nextInt();
 
-
         System.out.print("Enter Employee Salary: ");
         double salary = sc.nextDouble();
 
+        Employee emp = new Employee(id, name, age, salary);
 
+        File file = new File(fileName);
 
-        Employee emp =
-                new Employee(id, name, age, salary);
-
-
-
-        try {
-
-            FileOutputStream fos =
-                    new FileOutputStream(fileName, true);
-
-
-            ObjectOutputStream oos =
-                    new ObjectOutputStream(fos) {
-
-                protected void writeStreamHeader()
-                        throws IOException {
-
-                    reset();
-                }
-            };
-
+        try (FileOutputStream fos = new FileOutputStream(file, true);
+             ObjectOutputStream oos =
+                     (file.exists() && file.length() > 0)
+                             ? new AppendableObjectOutputStream(fos)
+                             : new ObjectOutputStream(fos)) {
 
             oos.writeObject(emp);
 
-            oos.close();
-            fos.close();
-
-
             System.out.println("Employee Added Successfully");
 
-        }
-
-        catch(IOException e) {
-
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    static void displayEmployees() {
 
+        File file = new File(fileName);
 
-
-    public static void displayEmployees() {
-
+        if (!file.exists()) {
+            System.out.println("No Employee Records Found");
+            return;
+        }
 
         System.out.println("\n----Report-----");
 
-
-        try {
-
-
-            FileInputStream fis =
-                    new FileInputStream(fileName);
-
-
-            ObjectInputStream ois =
-                    new ObjectInputStream(fis);
-
-
+        try (ObjectInputStream ois =
+                     new ObjectInputStream(new FileInputStream(file))) {
 
             while (true) {
 
-
-                Employee emp =
-                        (Employee) ois.readObject();
-
-
+                Employee emp = (Employee) ois.readObject();
                 emp.display();
             }
 
-
-        }
-
-        catch(EOFException e) {
+        } catch (EOFException e) {
 
             System.out.println("----End of Report-----");
 
-        }
+        } catch (Exception e) {
 
-        catch(Exception e) {
-
-            System.out.println("No Employee Records Found");
+            e.printStackTrace();
         }
     }
 }
